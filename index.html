@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="vi" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1118">
+  <meta name="description" content="Trung tâm điều khiển các dịch vụ trong HomeDroid.">
+  <title>Nhà — Home Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="glow glow-a"></div>
+  <div class="glow glow-b"></div>
+
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="Nhà, về đầu trang">
+      <span class="brand-icon">N</span>
+      <span>Nhà</span>
+    </a>
+    <div class="header-actions">
+      <button class="icon-button" id="refresh-button" type="button" aria-label="Kiểm tra lại dịch vụ" title="Kiểm tra lại dịch vụ">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.34 5.66M20 4v7h-7"/></svg>
+      </button>
+      <button class="icon-button" id="theme-button" type="button" aria-label="Đổi giao diện sáng tối" title="Đổi giao diện">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="welcome-grid">
+      <article class="welcome-card panel">
+        <div>
+          <p class="kicker" id="greeting">Chào buổi sáng</p>
+          <h1>Mọi thứ ở nhà,<br>trong một màn hình.</h1>
+        </div>
+        <div class="clock-block">
+          <time id="clock">00:00</time>
+          <p id="date-label">Đang tải ngày…</p>
+        </div>
+      </article>
+
+      <article class="weather-card panel" aria-labelledby="weather-title">
+        <div class="panel-topline">
+          <div>
+            <p class="kicker">Thời tiết</p>
+            <h2 id="weather-title">Hồ Chí Minh</h2>
+          </div>
+          <button class="text-button" id="change-city" type="button">Đổi thành phố</button>
+        </div>
+        <div class="weather-main">
+          <strong id="temperature">--°</strong>
+          <div>
+            <p id="weather-label">Đang cập nhật</p>
+            <p class="muted" id="weather-detail">--</p>
+          </div>
+        </div>
+        <p class="weather-error" id="weather-error" hidden>Không thể lấy thời tiết. Dữ liệu cũ vẫn được giữ lại.</p>
+      </article>
+    </section>
+
+    <section class="section" aria-labelledby="services-title">
+      <div class="section-heading">
+        <div>
+          <p class="kicker">Máy chủ trong túi</p>
+          <h2 id="services-title">Dịch vụ HomeDroid</h2>
+        </div>
+        <div class="summary" aria-live="polite"><span id="online-count">0</span> đang hoạt động</div>
+      </div>
+      <div class="service-grid" id="service-grid"></div>
+    </section>
+
+    <section class="lower-grid section">
+      <article class="shortcuts panel" aria-labelledby="shortcuts-title">
+        <div class="panel-topline">
+          <div>
+            <p class="kicker">Truy cập nhanh</p>
+            <h2 id="shortcuts-title">Lối tắt</h2>
+          </div>
+          <button class="text-button" id="copy-address" type="button">Chép IP máy chủ</button>
+        </div>
+        <div class="shortcut-list" id="shortcut-list"></div>
+      </article>
+
+      <article class="today panel" aria-labelledby="today-title">
+        <div class="panel-topline">
+          <div>
+            <p class="kicker">Ghi nhớ cục bộ</p>
+            <h2 id="today-title">Hôm nay</h2>
+          </div>
+          <span class="task-count" id="task-count">0 việc</span>
+        </div>
+        <form class="task-form" id="task-form">
+          <label class="sr-only" for="task-input">Thêm việc cần làm</label>
+          <input id="task-input" maxlength="100" placeholder="Thêm một việc nhỏ…" autocomplete="off" required>
+          <button type="submit" aria-label="Thêm việc">+</button>
+        </form>
+        <ul class="task-list" id="task-list"></ul>
+        <textarea id="note" maxlength="500" aria-label="Ghi chú nhanh" placeholder="Ghi chú nhanh…"></textarea>
+      </article>
+    </section>
+  </main>
+
+  <footer>
+    <span id="server-address">HomeDroid</span>
+    <span class="dot"></span>
+    <span>Dữ liệu cá nhân lưu trong trình duyệt này</span>
+  </footer>
+
+  <dialog id="city-dialog">
+    <form method="dialog" class="dialog-card" id="city-form">
+      <div class="panel-topline">
+        <div>
+          <p class="kicker">Cài đặt</p>
+          <h2>Chọn thành phố</h2>
+        </div>
+        <button class="close-button" value="cancel" aria-label="Đóng" formnovalidate>×</button>
+      </div>
+      <label for="city-input">Tên thành phố</label>
+      <div class="city-search">
+        <input id="city-input" placeholder="Ví dụ: Đà Nẵng" autocomplete="off" required>
+        <button class="primary-button" type="submit">Tìm</button>
+      </div>
+      <p class="dialog-status" id="city-status"></p>
+    </form>
+  </dialog>
+
+  <template id="service-template">
+    <a class="service-card panel" target="_blank" rel="noreferrer">
+      <div class="service-mark"></div>
+      <div class="service-copy">
+        <strong class="service-name"></strong>
+        <span class="service-port"></span>
+      </div>
+      <span class="service-status"><i></i><span>Đang kiểm tra</span></span>
+      <svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg>
+    </a>
+  </template>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
