@@ -1,37 +1,37 @@
-# Nhà — Home Dashboard
+# Home Dashboard
 
-Dashboard nhẹ dành cho HomeDroid: đồng hồ, thời tiết, trạng thái dịch vụ LAN, lối tắt, danh sách việc và ghi chú nhanh.
+A lightweight dashboard for HomeDroid with a clock, weather, LAN service status, shortcuts, tasks, and quick notes.
 
-## Đặc điểm
+## Features
 
-- Static site, không dependency và không cần build.
-- Tự dùng hostname hiện tại để tạo link tới các cổng HomeDroid.
-- Kiểm tra HomeDroid, AdGuard Home, Mộc, Jellyfin, Home Assistant và Local AI.
-- Thời tiết từ Open-Meteo; có thể đổi thành phố.
-- Việc cần làm, ghi chú, thành phố và theme lưu trong `localStorage` của từng trình duyệt.
+- Static site with no dependencies or build step.
+- Uses the current hostname to create links to HomeDroid ports.
+- Checks HomeDroid, AdGuard Home, Mộc, Jellyfin, Home Assistant, and Local AI.
+- Uses Open-Meteo for weather and supports changing the city.
+- Stores tasks, notes, city, and theme in each browser's `localStorage`.
 
-## Chạy thử
+## Run locally
 
 ```bash
 python -m http.server 4174
 node dashboard.test.mjs
 ```
 
-Mở `http://localhost:4174`.
+Open `http://localhost:4174`.
 
-## Deploy bằng HomeDroid
+## Deploy with HomeDroid
 
-Tạo deployment với:
+Create a deployment with:
 
-| Trường | Giá trị |
+| Field | Value |
 | --- | --- |
-| Repository | URL HTTPS của repository này |
+| Repository | This repository's HTTPS URL |
 | Branch | `main` |
 | Port | `4174` |
-| Runtime | `Static` hoặc `Auto` |
-| Build command | để trống |
-| Start command | để trống |
+| Runtime | `Static` or `Auto` |
+| Build command | Leave blank |
+| Start command | Leave blank |
 
-Sau khi deploy, mở `http://<IP-HomeDroid>:4174`.
+After deployment, open `http://<HomeDroid-IP>:4174`.
 
-Các thẻ dịch vụ mặc định dùng cổng chuẩn của HomeDroid. Dịch vụ chưa cài sẽ hiện `Ngoại tuyến`.
+The default service cards use HomeDroid's standard ports. Services that are not installed appear as `Offline`.

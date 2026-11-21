@@ -16,7 +16,7 @@ const services = [
   { name: "Local AI", port: 8090, color: "#ff9d7c" },
 ];
 
-const defaultPlace = { name: "Hồ Chí Minh", latitude: 10.7769, longitude: 106.7009 };
+const defaultPlace = { name: "Ho Chi Minh City", latitude: 10.7769, longitude: 106.7009 };
 const localHost = ["localhost", "127.0.0.1"].includes(location.hostname);
 const serverHost = localHost ? "192.168.1.163" : location.hostname;
 const $ = (selector) => document.querySelector(selector);
@@ -41,8 +41,8 @@ const elements = {
 
 function updateClock() {
   const now = new Date();
-  elements.clock.textContent = new Intl.DateTimeFormat("vi-VN", { hour: "2-digit", minute: "2-digit", hour12: false }).format(now);
-  elements.date.textContent = new Intl.DateTimeFormat("vi-VN", { weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(now);
+  elements.clock.textContent = new Intl.DateTimeFormat("en-US", { hour: "2-digit", minute: "2-digit", hour12: false }).format(now);
+  elements.date.textContent = new Intl.DateTimeFormat("en-US", { weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(now);
   elements.greeting.textContent = greetingForHour(now.getHours());
 }
 
@@ -67,11 +67,11 @@ async function fetchWeather() {
     const { current } = await response.json();
     elements.temperature.textContent = `${Math.round(current.temperature_2m)}°`;
     elements.weatherLabel.textContent = weatherLabel(current.weather_code);
-    elements.weatherDetail.textContent = `Cảm giác ${Math.round(current.apparent_temperature)}° · Ẩm ${current.relative_humidity_2m}% · Gió ${formatWind(current.wind_speed_10m)}`;
+    elements.weatherDetail.textContent = `Feels like ${Math.round(current.apparent_temperature)}° · Humidity ${current.relative_humidity_2m}% · Wind ${formatWind(current.wind_speed_10m)}`;
   } catch {
     elements.weatherError.hidden = false;
-    elements.weatherLabel.textContent = "Chưa có dữ liệu";
-    elements.weatherDetail.textContent = "Kiểm tra kết nối Internet";
+    elements.weatherLabel.textContent = "No data available";
+    elements.weatherDetail.textContent = "Check your internet connection";
   }
 }
 
@@ -84,7 +84,7 @@ function renderServices() {
     card.href = url;
     card.style.setProperty("--service-color", service.color);
     card.querySelector(".service-name").textContent = service.name;
-    card.querySelector(".service-port").textContent = `Cổng ${service.port}`;
+    card.querySelector(".service-port").textContent = `Port ${service.port}`;
     card.dataset.port = service.port;
     elements.serviceGrid.append(card);
   }
@@ -105,17 +105,17 @@ function renderServices() {
 
 async function probeService(card) {
   card.classList.remove("online", "offline");
-  card.querySelector(".service-status span").textContent = "Đang kiểm tra";
+  card.querySelector(".service-status span").textContent = "Checking";
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 2600);
   try {
     await fetch(card.href, { mode: "no-cors", cache: "no-store", signal: controller.signal });
     card.classList.add("online");
-    card.querySelector(".service-status span").textContent = "Hoạt động";
+    card.querySelector(".service-status span").textContent = "Online";
     return true;
   } catch {
     card.classList.add("offline");
-    card.querySelector(".service-status span").textContent = "Ngoại tuyến";
+    card.querySelector(".service-status span").textContent = "Offline";
     return false;
   } finally {
     clearTimeout(timeout);
@@ -143,7 +143,7 @@ function renderTasks() {
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.checked = task.done;
-    checkbox.setAttribute("aria-label", `Đánh dấu ${task.text}`);
+    checkbox.setAttribute("aria-label", `Mark ${task.text} as complete`);
     const text = document.createElement("span");
     text.textContent = task.text;
     const remove = document.createElement("button");
@@ -151,17 +151,17 @@ function renderTasks() {
     remove.type = "button";
     remove.dataset.delete = "true";
     remove.textContent = "×";
-    remove.setAttribute("aria-label", `Xóa ${task.text}`);
+    remove.setAttribute("aria-label", `Delete ${task.text}`);
     item.append(checkbox, text, remove);
     elements.taskList.append(item);
   }
   const open = tasks.filter((task) => !task.done).length;
-  elements.taskCount.textContent = `${open} việc`;
+  elements.taskCount.textContent = `${open} ${open === 1 ? "task" : "tasks"}`;
 }
 
 async function findCity(name) {
   const url = new URL("https://geocoding-api.open-meteo.com/v1/search");
-  url.search = new URLSearchParams({ name, count: "1", language: "vi", format: "json" });
+  url.search = new URLSearchParams({ name, count: "1", language: "en", format: "json" });
   const response = await fetch(url);
   if (!response.ok) throw new Error("search failed");
   const result = (await response.json()).results?.[0];
@@ -173,8 +173,8 @@ elements.theme.addEventListener("click", () => setTheme(document.documentElement
 elements.refresh.addEventListener("click", checkServices);
 elements.copyAddress.addEventListener("click", async () => {
   await navigator.clipboard.writeText(serverHost);
-  elements.copyAddress.textContent = "Đã chép";
-  setTimeout(() => { elements.copyAddress.textContent = "Chép IP máy chủ"; }, 1400);
+  elements.copyAddress.textContent = "Copied";
+  setTimeout(() => { elements.copyAddress.textContent = "Copy server IP"; }, 1400);
 });
 $("#change-city").addEventListener("click", () => {
   elements.cityInput.value = place.name.split(",")[0];
@@ -183,14 +183,14 @@ $("#change-city").addEventListener("click", () => {
 });
 elements.cityForm.addEventListener("submit", async (event) => {
   event.preventDefault();
-  elements.cityStatus.textContent = "Đang tìm…";
+  elements.cityStatus.textContent = "Searching…";
   try {
     place = await findCity(elements.cityInput.value.trim());
     localStorage.setItem(STORAGE.place, JSON.stringify(place));
     elements.cityDialog.close();
     await fetchWeather();
   } catch {
-    elements.cityStatus.textContent = "Không tìm thấy thành phố này.";
+    elements.cityStatus.textContent = "City not found.";
   }
 });
 elements.taskForm.addEventListener("submit", (event) => {
